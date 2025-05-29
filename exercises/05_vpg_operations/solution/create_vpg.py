@@ -9,18 +9,31 @@ Prerequisites:
    pip install -e .
 2. Update prerequisites/config.py with your ZVM details
 
+Usage:
+    python create_vpg.py --vm-names "vm1" "vm2" "vm3" [--vpg-name "My-VPG"]
+
 This solution demonstrates:
 - Creating a new VPG with basic settings
 - Configuring journal, recovery, and network settings
-- Adding VMs to the VPG
+- Adding specified VMs to the VPG
 - Proper error handling and logging
 """
 
 import sys
 import os
 import logging
+# Set up logging with timestamp
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 import json
+import argparse
 from pathlib import Path
+import urllib3
+
+# Suppress SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Add prerequisites to Python path
 prerequisites_path = Path(__file__).parent.parent.parent.parent / "prerequisites"
@@ -43,19 +56,65 @@ except ImportError:
     print("Expected path:", prerequisites_path / "config.py")
     sys.exit(1)
 
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description='Create VPG and add specified VMs')
+    parser.add_argument('--vm-names', nargs='+', required=True,
+                      help='List of VM names to add to the VPG (can be space-separated or comma-separated)')
+    parser.add_argument('--vpg-name', default="Test-VPG-Python",
+                      help='Name of the VPG to create (default: Test-VPG-Python)')
+    return parser.parse_args()
+
+def find_vms_by_names(client, site_identifier, vm_names):
+    """Find VMs by their names in the specified site."""
+    vms = client.virtualization_sites.get_virtualization_site_vms(site_identifier=site_identifier)
+    logging.info(f"find_vms_by_names: found vms {json.dumps(vms, indent=4)} VMs in site {site_identifier}")
+    if not vms:
+        return [], []
+    
+    # Create a dictionary of VM name to VM object for easy lookup
+    vm_dict = {vm.get('VmName'): vm for vm in vms}
+    
+    # Find requested VMs
+    found_vms = []
+    not_found = []
+    
+    for vm_name in vm_names:
+        if vm_name in vm_dict:
+            found_vms.append(vm_dict[vm_name])
+            logging.info(f"Found VM: {vm_name} (ID: {vm_dict[vm_name].get('VmIdentifier')})")
+        else:
+            not_found.append(vm_name)
+            logging.warning(f"VM not found: {vm_name}")
+    
+    return found_vms, not_found
+
+def remove_vm_from_vpg(client, vpg_name, vm):
+    """Remove a VM from the VPG."""
+    vm_name = vm.get('VmName')
+    # vm_id = vm.get('VmIdentifier')
+    logging.info(f"\nRemoving VM {vm_name} from VPG...")
+    client.vpgs.remove_vm_from_vpg(vpg_name=vpg_name, vm_name=vm_name)
+
 def main():
     """
     Main function to demonstrate VPG creation.
     Shows how to:
     1. Create a new VPG with basic settings
     2. Configure journal, recovery, and network settings
-    3. Add VMs to the VPG
+    3. Add specified VMs to the VPG
+    4. Remove the last added VM from the VPG
     """
-    # Set up logging with timestamp
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s'
-    )
+    # Parse command line arguments
+    args = parse_arguments()
+    
+    # Handle both space-separated and comma-separated VM names
+    vm_names = []
+    for name in args.vm_names:
+        vm_names.extend([n.strip() for n in name.split(',') if n.strip()])
+    
+    # Update args.vm_names with the processed list
+    args.vm_names = vm_names
     
     try:
         # Step 1: Create a ZVMLClient instance
@@ -124,7 +183,7 @@ def main():
         
         # Step 4: Create VPG configuration
         logging.info("\nCreating VPG configuration...")
-        vpg_name = "Test-VPG-Python"
+        vpg_name = args.vpg_name
         
         # Basic VPG settings
         basic = {
@@ -138,13 +197,8 @@ def main():
             "RecoverySiteIdentifier": peer_site_identifier
         }
         
-        # Journal settings
+        # Journal settings, keep the default settings
         journal = {
-            "DatastoreIdentifier": target_datastore.get('DatastoreIdentifier'),
-            "Limitation": {
-                "HardLimitInMB": 153600,
-                "WarningThresholdInMB": 115200
-            }
         }
         
         # Recovery settings
@@ -180,34 +234,54 @@ def main():
         vpg_id = client.vpgs.create_vpg(basic=basic, journal=journal, recovery=recovery, networks=networks, sync=True)
         logging.info(f"VPG created successfully with ID: {vpg_id}")
         
-        # Step 6: Get available VMs for protection
-        logging.info("\nRetrieving available VMs for protection...")
-        vms = client.virtualization_sites.get_virtualization_site_vms(site_identifier=local_site_identifier)
+        # Step 6: Get specified VMs for protection
+        logging.info(f"\nRetrieving specified VMs for protection: {args.vm_names}")
+        found_vms, not_found = find_vms_by_names(client, local_site_identifier, args.vm_names)
         
-        if not vms:
-            logging.warning("No VMs found for protection!")
+        if not_found:
+            logging.warning(f"The following VMs were not found: {not_found}")
+        
+        if not found_vms:
+            logging.error("No VMs found for protection!")
             sys.exit(1)
             
-        # Filter out VMs that are already protected
-        available_vms = [vm for vm in vms if not vm.get('IsProtected')]
-        logging.info(f"Found {len(available_vms)} available VM(s) for protection")
+        logging.info(f"Found {len(found_vms)} VM(s) for protection")
         
         # Step 7: Add VMs to VPG
-        for vm in available_vms[:2]:  # Add first two available VMs
-            logging.info(f"\nAdding VM {vm.get('VmName')} to VPG...")
+        for vm in found_vms:
+            vm_name = vm.get('VmName')
+            vm_id = vm.get('VmIdentifier')
+            logging.info(f"\nAdding VM {vm_name} (ID: {vm_id}) to VPG...")
             vm_payload = {
-                "VmIdentifier": vm.get('VmIdentifier'),
+                "VmIdentifier": vm_id,
                 "Recovery": {
                     "HostIdentifier": target_host.get('HostIdentifier'),
                     "DatastoreIdentifier": target_datastore.get('DatastoreIdentifier'),
                     "FolderIdentifier": target_folder.get('FolderIdentifier')
                 }
             }
-            task_id = client.vpgs.add_vm_to_vpg(vpg_name, vm_list_payload=vm_payload)
-            logging.info(f"Task ID: {task_id} to add VM {vm.get('VmName')} to VPG")
+            task_id = client.vpgs.add_vm_to_vpg(args.vpg_name, vm_list_payload=vm_payload)
+            logging.info(f"Task ID: {task_id} to add VM {vm_name} to VPG")
+        
+        # Step 8: Interactive VM removal
+        if found_vms:
+            last_vm = found_vms[-1]
+            vm_name = last_vm.get('VmName')
+            
+            while True:
+                response = input(f"\nWould you like to remove the last added VM ({vm_name}) from the VPG? (yes/no): ").lower()
+                if response in ['yes', 'y']:
+                    remove_vm_from_vpg(client, args.vpg_name, last_vm)
+                    logging.info(f"Successfully removed VM {vm_name} from VPG {args.vpg_name}")
+                    break
+                elif response in ['no', 'n']:
+                    logging.info("Skipping VM removal.")
+                    break
+                else:
+                    print("Please answer 'yes' or 'no'")
         
     except Exception as e:
-        logging.error(f"VPG creation failed: {str(e)}")
+        logging.error(f"VPG operation failed: {str(e)}")
         sys.exit(1)
 
 if __name__ == "__main__":

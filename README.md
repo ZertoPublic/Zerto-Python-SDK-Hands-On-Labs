@@ -57,16 +57,24 @@ The lab is divided into 7 exercises:
    cd Zerto-Python-SDK-Hands-On-Labs
    ```
 
-2. Install required packages:
+2. Create and activate a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+   ```
+
+3. Install required packages:
    ```bash
    pip install -r prerequisites/requirements.txt
    ```
 
-3. Set up your environment:
+4. Set up your environment:
    - Copy `prerequisites/config.example.py` to `prerequisites/config.py`
    - Update the configuration with your ZVM details
 
-4. Start with Exercise 1 in the `exercises` directory
+5. Start with Exercise 1 in the `exercises` directory
+
+**Note:** When you're done working on the project, you can deactivate the virtual environment by typing `deactivate` in your terminal.
 
 ## Lab Completion
 
