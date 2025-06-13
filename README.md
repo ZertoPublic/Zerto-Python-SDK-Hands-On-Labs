@@ -58,21 +58,57 @@ The lab is divided into 7 exercises:
    ```
 
 2. Create and activate a virtual environment:
+
+   **On macOS/Linux:**
    ```bash
    python3 -m venv venv
-   source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+   source venv/bin/activate
    ```
 
-3. Install required packages:
+   **On Windows:**
+   ```cmd
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+
+   **On Windows PowerShell:**
+   ```powershell
+   python -m venv venv
+   venv\Scripts\Activate.ps1
+   ```
+
+3. Install the Zerto Python SDK (`zvml` module):
+
+   **Option 1: Standard install**
+   ```bash
+   cd ../zvml-python-sdk
+   pip install -r requirements.txt
+   pip install .
+   cd ../Zerto-Python-SDK-Hands-On-Labs
+   ```
+
+   **Option 2: Development mode (recommended for contributors)**
+   ```bash
+   cd ../zvml-python-sdk
+   pip install -r requirements.txt
+   pip install -e .
+   cd ../Zerto-Python-SDK-Hands-On-Labs
+   ```
+
+4. Install required packages:
    ```bash
    pip install -r prerequisites/requirements.txt
    ```
 
-4. Set up your environment:
+5. Set up your environment:
    - Copy `prerequisites/config.example.py` to `prerequisites/config.py`
-   - Update the configuration with your ZVM details
+   - Update the configuration with your ZVM details:
+     - **ZVM_HOST**: Your Zerto Virtual Manager IP address or hostname
+     - **CLIENT_ID**: Your Keycloak client ID (see Keycloak setup in config.example.py)
+     - **CLIENT_SECRET**: Your Keycloak client secret
+   - **Important**: Never commit your `config.py` file as it contains sensitive credentials
 
-5. Start with Exercise 1 in the `exercises` directory
+6. Start with Exercise 1 in the `exercises` directory
 
 **Note:** When you're done working on the project, you can deactivate the virtual environment by typing `deactivate` in your terminal.
 
@@ -95,4 +131,4 @@ If you encounter any issues during the lab:
 
 ## Feedback
 
-Your feedback is valuable! Please complete the feedback form after finishing the lab to help us improve the content. 
+Your feedback is valuable! Please complete the feedback form after finishing the lab to help us improve the content.
