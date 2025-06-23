@@ -3,9 +3,13 @@
 Exercise 2: Authentication - Beginner-Friendly Instructions
 This script demonstrates how to authenticate with Zerto API using Keycloak.
 
-PREREQUISITES (Complete these first):
-1. Make sure you have the zvml package installed (see main README)
-2. Update prerequisites/config.py with your ZVM details:
+Prerequisites:
+1. Install the zvml package in development mode:
+   cd /path/to/zvml-python-sdk
+   pip install -e .
+2. Update prerequisites/config.py with your ZVM details
+
+3. Update prerequisites/config.py with your ZVM details:
    - ZVM_HOST: Your Zerto Virtual Manager IP address or hostname
    - CLIENT_ID: Your Keycloak client ID
    - CLIENT_SECRET: Your Keycloak client secret
@@ -33,15 +37,19 @@ import os
 import logging
 import json
 from pathlib import Path
+import urllib3
 
-# Add prerequisites to Python path (this helps Python find your config file)
+# Add prerequisites to Python path
 prerequisites_path = Path(__file__).parent.parent.parent.parent / "prerequisites"
 sys.path.append(str(prerequisites_path))
 
-# Import the Zerto SDK - this gives us the ZVMLClient class
+# Import the SDK modules
 from zvml import ZVMLClient
 
-# Import your configuration settings
+# Suppress SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Import configuration
 try:
     from config import (
         ZVM_HOST,        # Your ZVM IP address (e.g., "192.168.1.100")
@@ -51,24 +59,23 @@ try:
         CLIENT_SECRET    # Your Keycloak client secret
     )
 except ImportError:
-    print("❌ ERROR: Configuration file not found!")
-    print("Please copy config.example.py to config.py and update with your values")
+    print("Error: Please copy config.example.py to config.py and update with your values")
     print("Expected path:", prerequisites_path / "config.py")
     sys.exit(1)
 
 def main():
     """
-    Main function - this is where your code goes!
-    Follow the step-by-step instructions below.
+    Main function to demonstrate Zerto authentication.
+    Shows how to:
+    1. Initialize ZVMLClient with Keycloak credentials
+    2. Test connection by retrieving local site info
+    3. Handle authentication and connection errors
     """
-    # Set up logging so you can see what's happening
+    # Set up logging with timestamp
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s'
     )
-    
-    print("🚀 Starting Zerto Authentication Exercise")
-    print("=" * 50)
     
     try:
         # ========================================
@@ -86,15 +93,16 @@ def main():
         #     client_secret=CLIENT_SECRET,
         #     verify_certificate=ZVM_SSL_VERIFY
         # )
+        # logging.info("Testing connection by retrieving local site information...")
         # 
         # EXPLANATION:
         # - zvm_address: Where your ZVM is located (from config.py)
         # - client_id: Your Keycloak client ID (from config.py)
         # - client_secret: Your Keycloak client secret (from config.py)
         # - verify_certificate: Whether to check SSL certificates (from config.py)
-        
-        client = None  # ← REPLACE THIS LINE WITH YOUR CODE
-        
+
+        # ← ADD YOUR CODE HERE
+
         # ========================================
         # STEP 2: Test the connection
         # ========================================
@@ -115,25 +123,8 @@ def main():
         
         # ← ADD YOUR CODE HERE
         
-        # ========================================
-        # STEP 3: Display success message
-        # ========================================
-        print("\n📝 STEP 3: Displaying success message...")
-        print("You need to add a final success message.")
-        
-        # TODO: Add a success message
-        # HINT: Use this syntax:
-        # logging.info("🎉 Connection successful!")
-        # 
-        # EXPLANATION:
-        # This confirms that everything worked correctly
-        
-        # ← ADD YOUR CODE HERE
-        
     except Exception as e:
         # This catches any errors that might occur
-        print(f"\n❌ ERROR: Something went wrong!")
-        print(f"Error details: {str(e)}")
         logging.error(f"Authentication failed: {str(e)}")
         sys.exit(1)
 

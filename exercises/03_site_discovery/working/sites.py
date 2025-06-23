@@ -3,10 +3,11 @@
 Exercise 3: Site Discovery - Beginner-Friendly Instructions
 This script demonstrates how to discover and work with Zerto virtualization sites.
 
-PREREQUISITES (Complete these first):
-1. ✅ Completed Exercise 2 (Authentication)
-2. ✅ Make sure you have the zvml package installed
-3. ✅ Updated prerequisites/config.py with your ZVM details
+Prerequisites:
+1. Install the zvml package in development mode:
+   cd /path/to/zvml-python-sdk
+   pip install -e .
+2. Update prerequisites/config.py with your ZVM details
 
 WHAT YOU NEED TO DO:
 In this exercise, you will:
@@ -32,15 +33,19 @@ import os
 import logging
 import json
 from pathlib import Path
+import urllib3
 
-# Add prerequisites to Python path (this helps Python find your config file)
+# Suppress SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Add prerequisites to Python path
 prerequisites_path = Path(__file__).parent.parent.parent.parent / "prerequisites"
 sys.path.append(str(prerequisites_path))
 
-# Import the Zerto SDK - this gives us the ZVMLClient class
+# Import the SDK modules
 from zvml import ZVMLClient
 
-# Import your configuration settings
+# Import configuration
 try:
     from config import (
         ZVM_HOST,        # Your ZVM IP address (e.g., "192.168.1.100")
@@ -57,17 +62,16 @@ except ImportError:
 
 def main():
     """
-    Main function - this is where your code goes!
-    Follow the step-by-step instructions below.
+    Main function to demonstrate site discovery.
+    Shows how to:
+    1. List all available virtualization sites
+    2. Get and display local site information
     """
-    # Set up logging so you can see what's happening
+    # Set up logging with timestamp
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s'
     )
-    
-    print("🚀 Starting Zerto Site Discovery Exercise")
-    print("=" * 50)
     
     try:
         # ========================================
@@ -88,8 +92,8 @@ def main():
         # EXPLANATION:
         # This creates a connection to your ZVM (same as Exercise 2)
         
-        client = None  # ← REPLACE THIS LINE WITH YOUR CODE
-        
+        # ← ADD YOUR CODE HERE
+       
         # ========================================
         # STEP 2: List all available sites
         # ========================================
@@ -99,6 +103,7 @@ def main():
         # TODO: Add code to get the list of sites
         # HINT: Use this syntax:
         # sites = client.virtualization_sites.get_virtualization_sites()
+        # logging.info(f"Sites Info: {json.dumps(sites, indent=4)}")
         # 
         # EXPLANATION:
         # - client.virtualization_sites.get_virtualization_sites() gets all sites
@@ -106,27 +111,9 @@ def main():
         
         # ← ADD YOUR CODE HERE
         
-        # TODO: Add code to display the sites
-        # HINT: Use this syntax:
-        # if not sites:
-        #     logging.warning("No sites found!")
-        # else:
-        #     logging.info(f"Found {len(sites)} site(s):")
-        #     logging.info(f'Sites Info: {json.dumps(sites, indent=4)}')
-        # 
-        # EXPLANATION:
-        # - len(sites) counts how many sites were found
-        # - json.dumps(sites, indent=4) formats the site data nicely
-        # - logging.info() displays the information
-        
-        # ← ADD YOUR CODE HERE
-        
         # ========================================
         # STEP 3: Get local site information
         # ========================================
-        print("\n📝 STEP 3: Getting local site details...")
-        print("You need to get detailed information about your local site.")
-        
         # TODO: Add code to get local site information
         # HINT: Use this syntax:
         # local_site = client.localsite.get_local_site()
@@ -140,9 +127,6 @@ def main():
         # ← ADD YOUR CODE HERE
         
     except Exception as e:
-        # This catches any errors that might occur
-        print(f"\n❌ ERROR: Something went wrong!")
-        print(f"Error details: {str(e)}")
         logging.error(f"Site discovery failed: {str(e)}")
         sys.exit(1)
 

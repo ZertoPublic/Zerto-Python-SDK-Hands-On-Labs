@@ -52,89 +52,6 @@ except ImportError:
     print("Expected path:", prerequisites_path / "config.py")
     sys.exit(1)
 
-def parse_arguments():
-    """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description='Perform failover test on a VPG')
-    parser.add_argument('--vpg-name', required=True,
-                      help='Name of the VPG to test')
-    return parser.parse_args()
-
-def find_vpg_by_name(client, vpg_name):
-    """
-    Find a VPG by its name.
-    
-    Args:
-        client: ZVMLClient instance
-        vpg_name: Name of the VPG to find
-        
-    Returns:
-        dict: VPG object if found, None otherwise
-    """
-    vpg = client.vpgs.list_vpgs(vpg_name=vpg_name)
-    # logging.info(f"Found vpg {json.dumps(vpg, indent=4)}")
-    return vpg if vpg else None
-
-def start_failover_test(client, vpg_name):
-    """
-    Start a failover test for the specified VPG using default settings.
-    
-    Args:
-        client: ZVMLClient instance
-        vpg_name: Name of the VPG to test
-        
-    Returns:
-        str: Test identifier
-    """
-    logging.info(f"Starting failover test for VPG '{vpg_name}'")
-    
-    # Start the test with default settings
-    response = client.vpgs.failover_test(
-        vpg_name=vpg_name,
-        sync=True  # Wait for the test to start
-    )
-    
-    logging.info(f"Faiolver test response: {response}")
-    return response
-
-def monitor_test_progress(client, vpg_name, test_id):
-    """
-    Monitor the progress of a failover test.
-    
-    Args:
-        client: ZVMLClient instance
-        vpg_name: Name of the VPG
-        test_id: Test identifier
-        
-    Returns:
-        bool: True if test completed successfully, False otherwise
-    """
-    test_status = client.vpgs.get_vpg_test_status(vpg_name, test_id)
-    status = test_status.get('Status')
-    progress = test_status.get('Progress', 0)
-    
-    logging.info(f"Test status: {status} (Progress: {progress}%)")
-    
-    if status == 'Succeeded':
-        return True
-    elif status in ['Failed', 'Stopped']:
-        logging.error(f"Test {status.lower()}: {test_status.get('Message', 'No message')}")
-        return False
-    
-    return False  # Test is still running
-
-def stop_failover_test(client, vpg_name):
-    """
-    Stop a running failover test.
-    
-    Args:
-        client: ZVMLClient instance
-        vpg_name: Name of the VPG
-    """
-    logging.info(f"Stopping faiolver test for VPG '{vpg_name}'...")
-    response = client.vpgs.stop_failover_test(vpg_name=vpg_name)
-
-    logging.info(f"Stop failover test response: {response}")
-
 def main():
     """
     Main function to demonstrate failover testing.
@@ -147,7 +64,10 @@ def main():
     
     try:
         # Step 1: Parse command line arguments
-        args = parse_arguments()
+        parser = argparse.ArgumentParser(description='Perform failover test on a VPG')
+        parser.add_argument('--vpg-name', required=True,
+                        help='Name of the VPG to test')
+        args = parser.parse_args()
         
         # Step 2: Create ZVMLClient instance
         logging.info(f"Initializing ZVMLClient for ZVM at {ZVM_HOST}")
@@ -157,20 +77,17 @@ def main():
             client_secret=CLIENT_SECRET,
             verify_certificate=ZVM_SSL_VERIFY
         )
+    
+        # Step 3: Start the test with default settings
+        response = client.vpgs.failover_test(vpg_name=args.vpg_name, sync=True)    
+        logging.info(f"Faiolver test response: {response}")
         
-        # Step 3: Find the VPG
-        vpg = find_vpg_by_name(client, args.vpg_name)
-        if not vpg:
-            logging.error(f"VPG '{args.vpg_name}' not found!")
-            sys.exit(1)
-        
-        # Step 4: Start failover test
-        response = start_failover_test(client, args.vpg_name)
-        
-        # Step 5: Handle test stop request
+        # Step 4: Handle test stop request
         response = input("\nWould you like to stop the test? (yes/no): ").lower()
         if response in ['yes', 'y']:
-            stop_failover_test(client, args.vpg_name)
+            logging.info(f"Stopping faiolver test for VPG '{args.vpg_name}'...")
+            response = client.vpgs.stop_failover_test(vpg_name=args.vpg_name)
+            logging.info(f"Stop failover test response: {response}")
         
     except Exception as e:
         logging.error(f"Failover test failed: {str(e)}")

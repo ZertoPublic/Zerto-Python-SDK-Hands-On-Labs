@@ -20,6 +20,10 @@ import os
 import logging
 import json
 from pathlib import Path
+import urllib3
+
+# Suppress SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Add prerequisites to Python path
 prerequisites_path = Path(__file__).parent.parent.parent.parent / "prerequisites"
@@ -66,17 +70,10 @@ def main():
         )
         
         # Step 2: List all available sites
-        logging.info("Retrieving list of available sites...")
         sites = client.virtualization_sites.get_virtualization_sites()
-        
-        if not sites:
-            logging.warning("No sites found!")
-        else:
-            logging.info(f"Found {len(sites)} site(s):")
-            logging.info(f'Sites Info: {json.dumps(sites, indent=4)}')
+        logging.info(f"Sites Info: {json.dumps(sites, indent=4)}")
         
         # Step 3: Get and display local site information
-        logging.info("\nRetrieving local site information...")
         local_site = client.localsite.get_local_site()
         logging.info(f"Local site details: {json.dumps(local_site, indent=4)}")
         

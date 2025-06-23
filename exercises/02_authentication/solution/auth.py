@@ -20,6 +20,7 @@ import os
 import logging
 import json
 from pathlib import Path
+import urllib3
 
 # Add prerequisites to Python path
 prerequisites_path = Path(__file__).parent.parent.parent.parent / "prerequisites"
@@ -27,6 +28,9 @@ sys.path.append(str(prerequisites_path))
 
 # Import the SDK modules
 from zvml import ZVMLClient
+
+# Suppress SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Import configuration
 try:
@@ -68,9 +72,9 @@ def main():
         
         # Step 2: Test the connection by getting local site info
         logging.info("Testing connection by retrieving local site information...")
-        local_site = client.localsite.get_local_site()
         
         # Extract and log version information
+        local_site = client.localsite.get_local_site()
         version = local_site.get('Version')
         logging.info(f"Successfully connected to ZVM version: {version}")
         

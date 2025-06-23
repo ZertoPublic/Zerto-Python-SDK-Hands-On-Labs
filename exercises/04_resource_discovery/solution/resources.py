@@ -20,6 +20,10 @@ import os
 import logging
 import json
 from pathlib import Path
+import urllib3
+
+# Suppress SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) 
 
 # Add prerequisites to Python path
 prerequisites_path = Path(__file__).parent.parent.parent.parent / "prerequisites"
@@ -69,12 +73,7 @@ def main():
         # Step 2.1: List all available sites
         logging.info("Retrieving list of available sites...")
         sites = client.virtualization_sites.get_virtualization_sites()
-        
-        if not sites:
-            logging.warning("No sites found!")
-        else:
-            logging.info(f"Found {len(sites)} site(s):")
-            logging.info(f'Sites Info: {json.dumps(sites, indent=4)}')
+        logging.info(f"Sites: {json.dumps(sites, indent=4)}")
         
         # Step 2.2: Get local and peer site Identifiers
         local_site_identifier = client.localsite.get_local_site().get('SiteIdentifier')
@@ -82,38 +81,28 @@ def main():
         
         # Get peer site identifier (first non-local site)
         peer_site = next((site for site in sites if site.get('SiteIdentifier') != local_site_identifier), None)
-        if not peer_site:
-            logging.warning("No peer site found!")
-            sys.exit(1)
             
         peer_site_identifier = peer_site.get('SiteIdentifier')
         logging.info(f"Peer site identifier: {peer_site_identifier}")
 
 
         # Step 3: Get local site resources
-        # Step 3.1: Get local site vms
-        logging.info("\nRetrieving local site vms...")
+        # Step 3: Get local site vms
         local_vms = client.virtualization_sites.get_virtualization_site_vms(site_identifier=local_site_identifier)
         logging.info(f"Local Vms Info: {json.dumps(local_vms, indent=4)}")
 
-        # in order to create a DR solution, we need to get information about the local site vms and peer site datastores, hosts, folders and networks
-        # Step 3.2: Get peer site datastores
-        logging.info("\nRetrieving peer site datastores...")
         peer_datastores = client.virtualization_sites.get_virtualization_site_datastores(site_identifier=peer_site_identifier)
         logging.info(f"Peer Datastores Info: {json.dumps(peer_datastores, indent=4)}")
 
         # Step 3.3: Get peer site hosts
-        logging.info("\nRetrieving peer site hosts...")
         peer_hosts = client.virtualization_sites.get_virtualization_site_hosts(site_identifier=peer_site_identifier)
         logging.info(f"Peer Hosts Info: {json.dumps(peer_hosts, indent=4)}")
 
         # Step 3.4: Get peer site folders
-        logging.info("\nRetrieving peer site folders...")
         peer_folders = client.virtualization_sites.get_virtualization_site_folders(site_identifier=peer_site_identifier)
         logging.info(f"Peer Folders Info: {json.dumps(peer_folders, indent=4)}")
 
         # Step 3.5: Get peer site networks  
-        logging.info("\nRetrieving peer site networks...")
         peer_networks = client.virtualization_sites.get_virtualization_site_networks(site_identifier=peer_site_identifier)
         logging.info(f"Peer Networks Info: {json.dumps(peer_networks, indent=4)}")
 

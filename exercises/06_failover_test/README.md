@@ -17,13 +17,6 @@ In this exercise, you'll learn how to perform and manage failover tests for your
 - Working VPG
 - Access to test resources
 
-## Exercise Steps
-1. Select a VPG for testing
-2. Initiate a failover test
-3. Monitor test progress
-4. Stop the test
-5. Review test results
-
 ## Working Directory
 The `working` directory contains:
 - `failover.py` - Template to complete
@@ -33,16 +26,12 @@ The `solution` directory contains:
 - `failover.py` - Complete working example
 
 ## Key Concepts
+- Authentication
+- VPG attributes vs VM vs Volume vs NIC attributes
+- Resource discovery
 - Failover testing
 - Test monitoring
 - Test management
-- Status tracking
 
-## Common Issues
-- Test initiation failures
-- Resource conflicts
-- Test timeout
-- Cleanup issues
-
-## Next Steps
-Proceed to Exercise 7: Bulk Operations to learn about managing multiple VMs. 
+## Architecture
+![Client Credentials](/Zerto-Python-SDK-Hands-On-Labs/diagrams/vpg-structure.png)
