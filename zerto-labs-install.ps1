@@ -62,6 +62,16 @@ if ($pythonVersion) {
 # Clean up Python installer
 Remove-Item -Path $pythonInstaller -Force
 
+# Install VS Code Python Extension
+Write-Host "`nInstalling VS Code Python Extension..." -ForegroundColor Yellow
+$vscodePath = "C:\Program Files\Microsoft VS Code\Code.exe"
+if (Test-Path $vscodePath) {
+    & $vscodePath --install-extension ms-python.python
+    Write-Host "VS Code Python extension installed!" -ForegroundColor Green
+} else {
+    Write-Host "VS Code not found. Please install VS Code first." -ForegroundColor Red
+}
+
 # Create installation directory
 if (!(Test-Path $InstallPath)) {
     Write-Host "Creating installation directory..." -ForegroundColor Yellow
@@ -193,7 +203,9 @@ $readmeContent += "- `Zerto-Python-SDK-Hands-On-Labs/` - Hands-on labs and exerc
 $readmeContent += "## Setup Instructions`n`n"
 $readmeContent += "### 1. Python Installation`n"
 $readmeContent += "Python 3.13.5 has been automatically installed with 'Add to PATH' option.`n`n"
-$readmeContent += "### 2. Create Virtual Environment`n"
+$readmeContent += "### 2. VS Code Extension`n"
+$readmeContent += "VS Code Python extension (ms-python.python) has been automatically installed.`n`n"
+$readmeContent += "### 3. Create Virtual Environment`n"
 $readmeContent += "```powershell`n"
 $readmeContent += "cd Zerto-Python-SDK-Hands-On-Labs`n"
 $readmeContent += "python -m venv venv`n"
