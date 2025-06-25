@@ -10,7 +10,7 @@ Prerequisites:
 2. Update prerequisites/config.py with your ZVM details
 
 Usage:
-    python create_vpg.py --vm-names "vm1" "vm2" "vm3" [--vpg-name "My-VPG"]
+    python create_vpg.py [--vm-name "vm1"]  [--vpg-name "My-VPG"]
 
 This solution demonstrates:
 - Creating a new VPG with basic settings
@@ -70,7 +70,7 @@ def main():
         # Step 1: Create a ZVMLClient instance
         logging.info(f"Initializing ZVMLClient for ZVM at {ZVM_HOST}")
         parser = argparse.ArgumentParser(description='Create VPG and add specified VMs')
-        parser.add_argument('--vm-name', default="CRM-3",
+        parser.add_argument('--vm-name', default="CRM-03",
                         help='VM name to add to the VPG')
         parser.add_argument('--vpg-name', default="Test-VPG-Python",
                         help='Name of the VPG to create (default: Test-VPG-Python)')
@@ -134,20 +134,6 @@ def main():
             "DefaultDatastoreIdentifier": target_datastore.get('DatastoreIdentifier'),
             "DefaultFolderIdentifier": target_folder.get('FolderIdentifier')
         }
-        networks = {
-            "Failover": {
-                "Hypervisor": {
-                    "DefaultNetworkIdentifier": target_network.get('NetworkIdentifier')
-                }
-            },
-            "FailoverTest": {
-                "Hypervisor": {
-                    "DefaultNetworkIdentifier": target_network.get('NetworkIdentifier')
-                }
-            }
-        }
-        
-        # Network settings
         networks = {
             "Failover": {
                 "Hypervisor": {
