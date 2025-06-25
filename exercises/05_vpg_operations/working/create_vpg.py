@@ -92,7 +92,7 @@ def main():
         # TODO: Add code to parse arguments
         # HINT: Use this syntax:
         parser = argparse.ArgumentParser(description='Create VPG and add specified VMs')
-        parser.add_argument('--vm-name', required=True,
+        parser.add_argument('--vm-name', default="CRM-3",
                         help='VM name to add to the VPG')
         parser.add_argument('--vpg-name', default="Test-VPG-Python",
                         help='Name of the VPG to create (default: Test-VPG-Python)')

@@ -65,7 +65,7 @@ def main():
     try:
         # Step 1: Parse command line arguments
         parser = argparse.ArgumentParser(description='Perform failover test on a VPG')
-        parser.add_argument('--vpg-name', required=True,
+        parser.add_argument('--vpg-name', default="CRM",
                         help='Name of the VPG to test')
         args = parser.parse_args()
         

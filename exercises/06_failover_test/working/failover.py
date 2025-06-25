@@ -67,7 +67,7 @@ def main():
         # TODO: Add code to get sites and site identifiers
         # HINT: Use this syntax:
         # parser = argparse.ArgumentParser(description='Perform failover test on a VPG')
-        # parser.add_argument('--vpg-name', required=True,
+        # parser.add_argument('--vpg-name', default="CRM",
         #                 help='Name of the VPG to test')
         # args = parser.parse_args()
         # ← ADD YOUR CODE HERE

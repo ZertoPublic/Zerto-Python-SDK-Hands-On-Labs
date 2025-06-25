@@ -4,6 +4,64 @@ param([string]$InstallPath = "C:\zerto-labs")
 Write-Host "=== Zerto Labs Installation Script ===" -ForegroundColor Cyan
 Write-Host "Installation path: $InstallPath" -ForegroundColor White
 
+# Install Python 3.13.5
+Write-Host "`nInstalling Python 3.13.5..." -ForegroundColor Yellow
+
+# Create temp directory for Python installer
+$TempDir = Join-Path $InstallPath "temp"
+New-Item -ItemType Directory -Path $TempDir -Force | Out-Null
+
+# Download Python installer
+$pythonUrl = "https://www.python.org/ftp/python/3.13.5/python-3.13.5-amd64.exe"
+$pythonInstaller = Join-Path $TempDir "python-3.13.5-amd64.exe"
+
+Write-Host "Downloading Python 3.13.5..." -ForegroundColor Yellow
+try {
+    $webClient = New-Object System.Net.WebClient
+    $webClient.DownloadFile($pythonUrl, $pythonInstaller)
+    $webClient.Dispose()
+    Write-Host "Python installer downloaded successfully!" -ForegroundColor Green
+}
+catch {
+    Write-Host "Failed to download Python installer: $($_.Exception.Message)" -ForegroundColor Red
+    exit 1
+}
+
+# Install Python with "add to path" option
+Write-Host "Installing Python 3.13.5..." -ForegroundColor Yellow
+Write-Host "This may take a few minutes. Please wait..." -ForegroundColor White
+
+try {
+    $process = Start-Process -FilePath $pythonInstaller -ArgumentList "/quiet", "InstallAllUsers=1", "PrependPath=1", "Include_test=0" -Wait -PassThru
+    if ($process.ExitCode -eq 0) {
+        Write-Host "Python installed successfully!" -ForegroundColor Green
+    } else {
+        Write-Host "Python installation failed with exit code: $($process.ExitCode)" -ForegroundColor Red
+        exit 1
+    }
+}
+catch {
+    Write-Host "Failed to install Python: $($_.Exception.Message)" -ForegroundColor Red
+    exit 1
+}
+
+# Refresh environment variables
+Write-Host "Refreshing environment variables..." -ForegroundColor Yellow
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+# Verify Python installation
+Write-Host "Verifying Python installation..." -ForegroundColor Yellow
+$pythonVersion = python --version 2>$null
+if ($pythonVersion) {
+    Write-Host "Python installation verified: $pythonVersion" -ForegroundColor Green
+} else {
+    Write-Host "Python installation verification failed. Please restart your terminal and run the script again." -ForegroundColor Red
+    exit 1
+}
+
+# Clean up Python installer
+Remove-Item -Path $pythonInstaller -Force
+
 # Create installation directory
 if (!(Test-Path $InstallPath)) {
     Write-Host "Creating installation directory..." -ForegroundColor Yellow
@@ -133,8 +191,8 @@ $readmeContent += "## Directory Structure`n"
 $readmeContent += "- `zvml-python-sdk/` - Zerto Virtual Manager Linux Python SDK`n"
 $readmeContent += "- `Zerto-Python-SDK-Hands-On-Labs/` - Hands-on labs and exercises`n`n"
 $readmeContent += "## Setup Instructions`n`n"
-$readmeContent += "### 1. Install Python`n"
-$readmeContent += "Make sure you have Python 3.8 or higher installed.`n`n"
+$readmeContent += "### 1. Python Installation`n"
+$readmeContent += "Python 3.13.5 has been automatically installed with 'Add to PATH' option.`n`n"
 $readmeContent += "### 2. Create Virtual Environment`n"
 $readmeContent += "```powershell`n"
 $readmeContent += "cd Zerto-Python-SDK-Hands-On-Labs`n"
