@@ -169,3 +169,7 @@ Write-Host "Installation completed successfully!" -ForegroundColor Green
 
 # Open VS Code with the installation directory
 Start-Process "C:\Users\$env:USERNAME\AppData\Local\Programs\Microsoft VS Code\Code.exe" -ArgumentList "C:\zerto-labs"
+
+# Pause at the end to show results
+Write-Host "`nPress any key to exit..." -ForegroundColor Cyan
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") 
