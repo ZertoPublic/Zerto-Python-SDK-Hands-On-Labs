@@ -165,4 +165,6 @@ Write-Host "1. Navigate to: $InstallPath" -ForegroundColor White
 Write-Host "2. Read the README.md file for setup instructions" -ForegroundColor White
 Write-Host "3. Configure your ZVM connection details" -ForegroundColor White
 Write-Host "4. Start with the Hands-On Labs exercises" -ForegroundColor White
-Write-Host "Installation completed successfully!" -ForegroundColor Green 
+Write-Host "Installation completed successfully!" -ForegroundColor Green
+
+#Start ms visual studio code with c:\zerto-labs as an active folder
