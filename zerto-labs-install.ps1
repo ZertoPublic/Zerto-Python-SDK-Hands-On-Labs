@@ -167,4 +167,5 @@ Write-Host "3. Configure your ZVM connection details" -ForegroundColor White
 Write-Host "4. Start with the Hands-On Labs exercises" -ForegroundColor White
 Write-Host "Installation completed successfully!" -ForegroundColor Green
 
-#Start ms visual studio code with c:\zerto-labs as an active folder
+# Open VS Code with the installation directory
+Start-Process "C:\Users\$env:USERNAME\AppData\Local\Programs\Microsoft VS Code\Code.exe" -ArgumentList "C:\zerto-labs"
