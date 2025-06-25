@@ -161,11 +161,11 @@ Write-Host "  + zvml-python-sdk" -ForegroundColor Green
 Write-Host "  + Zerto-Python-SDK-Hands-On-Labs" -ForegroundColor Green
 
 Write-Host "`nNext steps:" -ForegroundColor Cyan
-Write-Host "1. Navigate to: $InstallPath" -ForegroundColor White
-Write-Host "2. Read the README.md file for setup instructions" -ForegroundColor White
-Write-Host "3. Configure your ZVM connection details" -ForegroundColor White
-Write-Host "4. Start with the Hands-On Labs exercises" -ForegroundColor White
-Write-Host "Installation completed successfully!" -ForegroundColor Green
+Write-Host "`n1. Navigate to: $InstallPath" -ForegroundColor White
+Write-Host "`n2. Read the README.md file for setup instructions" -ForegroundColor White
+Write-Host "`n3. Configure your ZVM connection details" -ForegroundColor White
+Write-Host "`n4. Start with the Hands-On Labs exercises" -ForegroundColor White
+Write-Host "`nInstallation completed successfully!" -ForegroundColor Green
 
 # Open VS Code with the installation directory
 Start-Process "C:\Program Files\Microsoft VS Code\Code.exe" -ArgumentList "C:\zerto-labs"
