@@ -168,4 +168,4 @@ Write-Host "4. Start with the Hands-On Labs exercises" -ForegroundColor White
 Write-Host "Installation completed successfully!" -ForegroundColor Green
 
 # Open VS Code with the installation directory
-Start-Process "C:\Programs\Microsoft VS Code\Code.exe" -ArgumentList "C:\zerto-labs"
+Start-Process "C:\Program Files\Microsoft VS Code\Code.exe" -ArgumentList "C:\zerto-labs"
