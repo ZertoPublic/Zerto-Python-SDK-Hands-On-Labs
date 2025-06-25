@@ -149,7 +149,7 @@ def main():
         # HINT: Use this syntax:
         peer_datastores = client.virtualization_sites.get_virtualization_site_datastores(site_identifier=peer_site_identifier)
         logging.info(f"Peer datastores: {json.dumps(peer_datastores, indent=4)}")
-        target_datastore = peer_datastores[2]  # Use first available
+        target_datastore = peer_datastores[0]  # Use first available
         
         peer_folders = client.virtualization_sites.get_virtualization_site_folders(site_identifier=peer_site_identifier)
         logging.info(f"Peer folders: {json.dumps(peer_folders, indent=4)}")
