@@ -92,7 +92,7 @@ def main():
         # TODO: Add code to parse arguments
         # HINT: Use this syntax:
         parser = argparse.ArgumentParser(description='Create VPG and add specified VMs')
-        parser.add_argument('--vm-name', default="CRM-3",
+        parser.add_argument('--vm-name', default="CRM-03",
                         help='VM name to add to the VPG')
         parser.add_argument('--vpg-name', default="Test-VPG-Python",
                         help='Name of the VPG to create (default: Test-VPG-Python)')
@@ -182,34 +182,34 @@ def main():
         
         # TODO: Add code to create VPG configuration
         # HINT: Use this syntax:
-        basic = {
-            "Name": args.vpg_name,
-            "VpgType": "Remote",
-            "RpoInSeconds": 300,
-            "JournalHistoryInHours": 24,
-            "Priority": "Medium",
-            "UseWanCompression": True,
-            "ProtectedSiteIdentifier": local_site_identifier,
-            "RecoverySiteIdentifier": peer_site_identifier
-        }
-        journal = {}  # Keep default settings
-        recovery = {
-            "DefaultHostIdentifier": target_host.get('HostIdentifier'),
-            "DefaultDatastoreIdentifier": target_datastore.get('DatastoreIdentifier'),
-            "DefaultFolderIdentifier": target_folder.get('FolderIdentifier')
-        }
-        networks = {
-            "Failover": {
-                "Hypervisor": {
-                    "DefaultNetworkIdentifier": target_network.get('NetworkIdentifier')
-                }
-            },
-            "FailoverTest": {
-                "Hypervisor": {
-                    "DefaultNetworkIdentifier": target_network.get('NetworkIdentifier')
-                }
-            }
-        }
+        # basic = {
+        #     "Name": args.vpg_name,
+        #     "VpgType": "Remote",
+        #     "RpoInSeconds": 300,
+        #     "JournalHistoryInHours": 24,
+        #     "Priority": "Medium",
+        #     "UseWanCompression": True,
+        #     "ProtectedSiteIdentifier": local_site_identifier,
+        #     "RecoverySiteIdentifier": peer_site_identifier
+        # }
+        # journal = {}  # Keep default settings
+        # recovery = {
+        #     "DefaultHostIdentifier": target_host.get('HostIdentifier'),
+        #     "DefaultDatastoreIdentifier": target_datastore.get('DatastoreIdentifier'),
+        #     "DefaultFolderIdentifier": target_folder.get('FolderIdentifier')
+        # }
+        # networks = {
+        #     "Failover": {
+        #         "Hypervisor": {
+        #             "DefaultNetworkIdentifier": target_network.get('NetworkIdentifier')
+        #         }
+        #     },
+        #     "FailoverTest": {
+        #         "Hypervisor": {
+        #             "DefaultNetworkIdentifier": target_network.get('NetworkIdentifier')
+        #         }
+        #     }
+        # }
         # 
         # EXPLANATION:
         # - basic = {
