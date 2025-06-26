@@ -62,16 +62,6 @@ if ($pythonVersion) {
 # Clean up Python installer
 Remove-Item -Path $pythonInstaller -Force
 
-# Install VS Code Python Extension
-Write-Host "`nInstalling VS Code Python Extension..." -ForegroundColor Yellow
-$vscodePath = "C:\Program Files\Microsoft VS Code\Code.exe"
-if (Test-Path $vscodePath) {
-    & $vscodePath --install-extension ms-python.python
-    Write-Host "VS Code Python extension installed!" -ForegroundColor Green
-} else {
-    Write-Host "VS Code not found. Please install VS Code first." -ForegroundColor Red
-}
-
 # Create installation directory
 if (!(Test-Path $InstallPath)) {
     Write-Host "Creating installation directory..." -ForegroundColor Yellow
